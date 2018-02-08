@@ -1,0 +1,52 @@
+/*
+////////////////////////////////////////////////////////////////
+// Project Web Console                                        //
+// Copyright 2016 by Hristo Iankov        All Rights Reserved //
+// This file is part of a larger project, please keep the     //
+// files together.                                            //
+////////////////////////////////////////////////////////////////
+*/
+
+body {
+	margin: 0px;
+}
+
+#console {
+}
+
+.console {
+	width: 100%;
+	height: 100%;
+	
+	background-color: black;
+	color: white;
+	padding: 10px;
+	
+	overflow-y: scroll;
+}
+
+.input-div {
+}
+.input-symbol {
+	float: left;
+}
+.input-box {
+	overflow: hidden;
+	outline: none;
+}
+.console, .input-div, .input-symbol, .input-box, .input-line {
+	font: 12px "Lucida Console", Monaco, monospace;
+}
+.console::selection{
+	background: #ffffff;
+}
+
+/* for fixed consoles */
+.console.fixed {
+	position: fixed;
+	height: 200px;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	z-index: 10;
+}

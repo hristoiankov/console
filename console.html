@@ -1,0 +1,29 @@
+
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="style.css">
+	</head>
+	<body>
+		<div style="display:none;">
+			<a href="location1">link1</a>
+			<a href="location2">link2</a>
+			<a href="location3">link3</a>
+			<a href="location4">link4</a>
+		</div>
+		
+		<div id="console" style="overflow:hidden;"></div>
+
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+		<script src="console.js"></script>
+		<script src="lib/lib-math.js"></script>
+		<script src="lib/lib-navigation.js"></script>
+		<script src="lib/lib-display.js"></script>
+		<script>
+			var myconsole = new Console("#console");
+			myconsole.addLibrary(new MathLibrary());
+			myconsole.addLibrary(new NavigationLibrary());
+			myconsole.addLibrary(new DisplayLibrary());
+			myconsole.print("Welcome to my website");
+		</script>
+	</body>
+</html>
