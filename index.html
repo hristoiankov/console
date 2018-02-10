@@ -14,15 +14,12 @@
 		<div id="console" style="overflow:hidden;"></div>
 		
 		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-		<script type="text/javascript" src="https://raw.githack.com/hristoiankov/web-console/master/scripts/console.js"></script>
+		<script type="text/javascript" src="https://raw.githack.com/hristoiankov/web-console/master/scripts/web-console.js"></script>
 		<script type="text/javascript" src="https://raw.githack.com/hristoiankov/web-console/master/scripts/lib-math.js"></script>
 		<script type="text/javascript" src="https://raw.githack.com/hristoiankov/web-console/master/scripts/lib-navigation.js"></script>
 		<script type="text/javascript" src="https://raw.githack.com/hristoiankov/web-console/master/scripts/lib-display.js"></script>
 		<script type="text/javascript" >
-			var myconsole = new Console("#console");
-			myconsole.addLibrary(new MathLibrary());
-			myconsole.addLibrary(new NavigationLibrary());
-			myconsole.addLibrary(new DisplayLibrary());
+			var myconsole = new WebConsole("#console");
 			myconsole.print("Welcome to Web Console");
 			myconsole.print("Enter 'help' to view the available commands.");
 		</script>
