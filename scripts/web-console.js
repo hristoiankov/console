@@ -43,19 +43,22 @@
 // the console use.
 //
 
-function Console(formSelector) {
-	if($(formSelector).length <= 0){return;}
+function WebConsole(formSelector) {
+	WebConsole.instance = this;
+	if($(formSelector).length <= 0) {return;}
 	// constructor
 	var me = this;
 	this.formSelector = formSelector;
 	this.$form = $(formSelector);
 	this.commandlibraries = [];
-	this.commandlibraries.push(new BasicLibrary(this));
 	// this.$inputdiv - defined below
 	// this.$inputbox - defined below
 	
 	// methods
-	this.generateInterface = function(formSelector) {
+	this.generateInterface = function() {
+		// clear all contents from the container
+		this.$form.html("");
+		
 		// add .console css class to form
 		this.$form.addClass("console");
 		// create the input box
@@ -104,13 +107,6 @@ function Console(formSelector) {
 		
 		// set focus onto input box
 		this.$inputbox.focus();
-		
-		// test
-		//this.writeConsole("test me now", "output-line");
-		/*this.writeConsole("myCommand Now", "input-line");
-		this.writeConsole("test me now", "output-line");
-		this.writeConsole("test me now", "output-line");
-		this.writeConsole("test me now", "output-line");*/
 	};
 	
 	this.revertCommand = function(revertCount) {
@@ -131,7 +127,6 @@ function Console(formSelector) {
 	
 	this.moveInputBoxToBottom = function() {
 		// move the input box to bottom
-		//this.$form.find(":last-child").append(this.$inputdiv);
 		this.$inputdiv.detach();
 		var $lastchild = this.$form.find(".console-line").last();
 		$lastchild.after(this.$inputdiv);
@@ -145,39 +140,37 @@ function Console(formSelector) {
 		// write the result to console
 		// clear input box
 		var text = this.$inputbox.text();
-		this.writeConsole(text, "input-line");
+		this.writeConsole(text, true);
 		this.$inputbox.empty();
 		
 		// attempt to match against attached libraries
-		var libraryResponse = this.executeAgainstLibraries(text);
-		var result = libraryResponse[1];
+		var response = this.executeAgainstLibraries(text);
 		
 		// if no match against libraries, then execute in console
-		if(!libraryResponse[0]) {result = me.executeLine(text);}
+		if(response == -1) {response = me.executeLine(text);}
 		
 		// write the response out to the console
-		if(result) { this.writeConsole(result, "output-line");}
+		if(response) { this.writeConsole(response, false);}
 	}
 	
 	this.executeAgainstLibraries = function(text) {
 		// traverse each library
-		for(var i = 0; i < this.commandlibraries.length; i++) {
-			var library = this.commandlibraries[i];
-			// traverse each command in the library
-			for(var key in library.commandmap) {
-				var regexp = new RegExp(key);
-				if(regexp.test(text)) {
-					var callback = library.commandmap[key];
-					var response = "Function is not properly defined.";
-					if(typeof callback === "function") {
-						response = callback(text);
-					}
-					// return with response
-					return [true, response];
+		for(var libraryIndex in WebConsole.libraries) {
+			var library = WebConsole.libraries[libraryIndex];
+			if(!typeof library.definition === "object") {
+				me.print("The library: " + library.name + 
+				" has an invalid library.definition defined.");
+				continue;
+			}
+			for(var commandIndex in library.definition.commands) {
+				var command = library.definition.commands[commandIndex];
+				if(command.pattern && new RegExp(command.pattern).test(text)
+					&& typeof command.action === "function") {
+					return command.action(text);
 				}
 			}
 		}
-		return [false, ""];
+		return -1;
 	}
 	
 	this.executeLine = function(text) {
@@ -190,23 +183,17 @@ function Console(formSelector) {
 		}
 	};
 	
-	this.writeConsole = function(text, outputclass) {
+	this.writeConsole = function(text, isInputLine) {
 		// write output or input to the console interface
 		// outputclass defines the type of console line
 		// is being written: .output-line or .input-line
 		text = this.conformText(text);
 		var outputline = "";
-		switch(outputclass) {
-			case "output-line":
-				outputline = "<div class='"+outputclass+" console-line'>"+text+"</div>";
-				break;
-			case "input-line":
-				outputline = "<div class='"+outputclass+" console-line'>> "+text+"</div>";
-				break;
-			default:
-				outputline = "<div class='"+outputclass+" console-line'>"+text+"</div>";
+		if(isInputLine) {
+			outputline = "<div class='input-line console-line'>> " + text + "</div>";
+		} else {
+			outputline = "<div class='output-line console-line'>" + text + "</div>";
 		}
-		
 		this.$form.append(outputline);
 		this.moveInputBoxToBottom();
 	};
@@ -220,48 +207,8 @@ function Console(formSelector) {
 	}
 	
 	this.print = function(text) {
-		this.writeConsole(text, "output-line");
+		this.writeConsole(text, false);
 		return "";
-	}
-	
-	// -------------------------------------
-	// Help Functions
-	// -------------------------------------
-	this.printHelp = function() {
-		this.print(",----------------------- Help -----------------------,");
-		this.print("| This is a real-time interactive javascript console.|");
-		this.print("|                                                    |");
-		this.printLibraryHelpDialogs();
-		this.print("`----------------------------------------------------`");
-	}
-	
-	this.printLibraryHelpDialogs = function() {
-		for(var i = 0; i < this.commandlibraries.length; i++) {
-			var library = this.commandlibraries[i];
-			this.print(library.getHelp());
-		}
-	}
-	
-	// -------------------------------------
-	// Public Functions
-	// -------------------------------------
-	this.addLibrary = function(library) {
-		// perform a test to determine if
-		// all the required function have
-		// been defined.  Including each
-		// of the functions in the commandmap
-		var errorMessage = "";
-		if(!library.commandmap) {
-			errorMessage += "No commandmap defined.";}
-		if(!typeof library.getHelp === "function") {
-			errorMessage += "Invalid or no getHelp function defined.";}
-		
-		if(errorMessage.length) {
-			print("Unable to add library:\n" + errorMessage);
-		} else {
-			// no problems so add the library
-			this.commandlibraries.push(library);
-		}
 	}
 	
 	function print(text) {
@@ -269,7 +216,27 @@ function Console(formSelector) {
 	}
 	
 	// constructor call
-	this.generateInterface(formSelector);
+	this.generateInterface();
+}
+WebConsole.libraries = [];
+
+/**
+ * Add a library globally to WebConsole.
+ * 
+ * This function should make checks to determine if the
+ * provided library is valid and display feedback if
+ * there is something missing from the library.
+ *
+ **/ 
+WebConsole.addLibrary = function(library) {
+	if(!WebConsole.libraries) {
+		WebConsole.libraries = [];
+	}
+	if(!library.definition) {
+		this.print("Unable to add library: No library.definition defined.");
+		return;
+	}
+	WebConsole.libraries.push(library);
 }
 
 // -------------------------------------
@@ -279,21 +246,100 @@ function Console(formSelector) {
 // outside of the library class in order
 // to be accessible globally as js
 // functions.
-function BasicLibrary(myconsole) {
-	this.commandmap = {};
-	this.commandmap['^help$'] = help;
+function HelpLibrary() {
+	var me = this;
+	var helpWidth = 54;
+	var leftColumnWidth = 24;
 	
-	this.getHelp = function() {
-		text = 
-		"| --------------------- Basic ---------------------- |\n" +
-		"| print(text)               - print text to console  |";
-		return text;
+	this.createHelpString = function() {
+		return me.createHeader("Help") 
+			+ me.createLine("This is a real-time interactive JavaScript console")
+			+ me.createAllLibraryDialogs(WebConsole.libraries)
+			+ me.createHeader();
 	}
 	
-	function help() {
-		myconsole.printHelp();
+	// print a help header
+	this.createHeader = function(text) {
+		if(!text)
+			return "|" + Array(helpWidth - 2 + 1).join("-") + "|\n";
+		var dashes = helpWidth - text.length - 2;
+		return "|" + Array(Math.floor(dashes/2)).join("-")
+			+ " " + text + " " + Array(Math.floor(dashes/2)).join("-") 
+			+ (dashes % 2 == 0 ? "" : "-") + "|\n";
 	}
+	
+	// print text across the entire width
+	this.createLine = function(text) {
+		if(!text)
+			return "|" + Array(helpWidth - 2 + 1).join(" ") + "|\n";
+		var textList = text ? text.match(new RegExp('.{1,' + (helpWidth - 4) + '}', 'g')) : null;
+		var lines = "";
+		while(textList.length > 0) {
+			var textVal = textList.shift();
+			lines += "| " + textVal 
+				+ Array(helpWidth - textVal.length - 3).join(" ")
+				+ " |\n";
+		}
+		return lines;
+	}
+	
+	// print text across two columns
+	this.createSplitLine = function(col1, col2) {
+		if(!col2)
+			return this.createLine(col1);
+		else if(!col1)
+			return this.createLine(col2);
+		var col1list = col1 ? col1.match(new RegExp('.{1,' + (leftColumnWidth - 4) + '}', 'g')) : null;
+		var col2list = col2 ? col2.match(new RegExp('.{1,' + (helpWidth - leftColumnWidth - 3) + '}', 'g')) : null;
+		var lines = "";
+		while(col1list.length > 0 || col2list.length > 0) {
+			var col1text = col1list.length > 0 ? col1list.shift() : "";
+			var col2text = col2list.length > 0 ? col2list.shift() : "";
+			lines += "| " + col1text 
+				+ Array(leftColumnWidth - col1text.length - 4 + 1).join(" ")
+				+ " - " + col2text
+				+ Array(helpWidth - leftColumnWidth - col2text.length - 2).join(" ") + " |\n";
+		}
+		return lines;
+	}
+	
+	this.createAllLibraryDialogs = function(libraries) {
+		var dialogs = "";
+		for (var libraryIndex in libraries) {
+			var library = libraries[libraryIndex];
+			dialogs += me.createLibraryDialog(library);
+		}
+		return dialogs;
+	}
+	this.createLibraryDialog = function(library) {
+		var dialog = me.createLine() 
+			+ me.createHeader(library.definition.name);
+		for(var commandIndex in library.definition.commands) {
+			var command = library.definition.commands[commandIndex];
+			if(command.signiture && command.description) {
+				dialog += me.createSplitLine(command.signiture, command.description);
+			}
+		}
+		return dialog;
+	}
+	
+	this.definition = {
+		name: "Basic",
+		commands: [
+			{
+				pattern: "^help$",
+				action: me.createHelpString,
+				signiture: null,
+				description: null},
+			{
+				pattern: null, 
+				action: null, 
+				signiture: "print(text)",
+				description: "print text to the console"}
+		]
+	};
 }
+WebConsole.addLibrary(new HelpLibrary());
 
 
 

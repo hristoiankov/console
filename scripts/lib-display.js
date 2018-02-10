@@ -5,9 +5,9 @@
 // files together.                                            //
 ////////////////////////////////////////////////////////////////
 
+// TODO: add a 'clear' screen command
 
-
-function DisplayLibrary(myconsole) {
+function DisplayLibrary() {
 
 	this.darkenDisplay = function() {
 		$('*').css("background-color", "black");
@@ -16,38 +16,58 @@ function DisplayLibrary(myconsole) {
 		return "";
 	}
 	this.lowerConsole = function() {
-		$(myconsole.formSelector).css("height", "50px");
+		$(WebConsole.instance.formSelector).css("height", "50px");
 		return "";
 	}
 	this.standardConsole = function() {
-		$(myconsole.formSelector).css("height", "200px");
+		$(WebConsole.instance.formSelector).css("height", "200px");
 		return "";
 	}
 	this.fullConsole = function() {
-		$(myconsole.formSelector).css("height", "100%");
-		$(myconsole.formSelector).css("z-index", "100");
-		$(myconsole.formSelector).hide();
+		$(WebConsole.instance.formSelector).css("height", "100%");
+		$(WebConsole.instance.formSelector).css("z-index", "100");
+		$(WebConsole.instance.formSelector).hide();
+		return "";
+	}
+	this.clearConsole = function() {
+		if(WebConsole.instance) {
+			WebConsole.instance.generateInterface();
+		}
 		return "";
 	}
 	
-	// mandatory help function
-	this.getHelp = function() {
-		var text = 
-		"| -------------------- Display --------------------- |\n" +
-		"| darken display            - darken the display     |\n" +
-		"| lower console             - lower the console      |\n" +
-		"| standard console          - return console to 200px|\n" +
-		"| full console              - fill screen w/ console |";
-		return text;
+	this.definition = {
+		name: "Basic",
+		commands: [
+			{
+				pattern: "^darken display$",
+				action: this.darkenDisplay,
+				signiture: "darken display",
+				description: "darken the display"},
+			{
+				pattern: "^lower console$",
+				action: this.darkenDisplay,
+				signiture: "lower console",
+				description: "lower the console"},
+			{
+				pattern: "^standard console$",
+				action: this.darkenDisplay,
+				signiture: "standard console",
+				description: "return console to 200px"},
+			{
+				pattern: "^full console$",
+				action: this.darkenDisplay,
+				signiture: "full console",
+				description: "fill screen w/ console"},
+			{
+				pattern: "^clear$",
+				action: this.clearConsole,
+				signiture: "clear",
+				description: "clear the console"}
+		]
 	};
-	
-	// define the command map at the end
-	this.commandmap = {};
-	this.commandmap['^darken display$']     = this.darkenDisplay;
-	this.commandmap['^lower console$'] 	    = this.lowerConsole;
-	this.commandmap['^standard console$']	= this.standardConsole;
-	this.commandmap['^full console$']	    = this.fullConsole;
 }
+WebConsole.addLibrary(new DisplayLibrary());
 
 // add a function to show a notepad in split with the console
 // the notepad will be a plain-text text area

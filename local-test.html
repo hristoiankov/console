@@ -1,0 +1,30 @@
+
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="styles/style.css">
+	</head>
+	<body>
+		<div style="display:none;">
+			<a href="location1">link1</a>
+			<a href="location2">link2</a>
+			<a href="location3">link3</a>
+			<a href="location4">link4</a>
+		</div>
+		
+		<div id="console" style="overflow:hidden;"></div>
+		
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+		<script type="text/javascript" src="scripts/web-console.js"></script>
+		<script type="text/javascript" src="scripts/lib-math.js"></script>
+		<script type="text/javascript" src="scripts/lib-navigation.js"></script>
+		<script type="text/javascript" src="scripts/lib-display.js"></script>
+		<script type="text/javascript" >
+			var myconsole = new WebConsole("#console");
+			/*myconsole.addLibrary(new MathLibrary());
+			myconsole.addLibrary(new NavigationLibrary());
+			myconsole.addLibrary(new DisplayLibrary());*/
+			myconsole.print("Welcome to Web Console");
+			myconsole.print("Enter 'help' to view the available commands.");
+		</script>
+	</body>
+</html>

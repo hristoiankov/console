@@ -5,7 +5,6 @@
 // files together.                                            //
 ////////////////////////////////////////////////////////////////
 
-
 function NavigationLibrary() {
 	// each library will require a function map,
 	// the related function definitions, and
@@ -20,7 +19,6 @@ function NavigationLibrary() {
 	
 	var me = this;
 
-	
 	this.listDirectory = function(exp) {
 		var $links = $("a");
 		var output = "";
@@ -44,24 +42,8 @@ function NavigationLibrary() {
 		return "";
 	}
 	
-	// mandatory help function
-	this.getHelp = function() {
-		var text = 
-		"| ------------------ Navigation -------------------- |\n" +
-		"| ls                        - list directory         |\n" +
-		"| cd [directory]            - change directory       |\n" +
-		"| cd ..                     - go back a directory    |";
-		return text;
-	};
-	
-	// define the command map at the end
-	this.commandmap = {};
-	this.commandmap['^ls$']      	= me.listDirectory;
-	this.commandmap['^cd \.\.$'] 	= me.goBack;
-	this.commandmap['^cd [^.].*$']	= me.changeDirectory;
-	
-	/*var library = {
-		name: "Navigation"
+	this.definition = {
+		name: "Navigation",
 		commands: [
 			{
 				pattern: '^ls$', 
@@ -79,5 +61,7 @@ function NavigationLibrary() {
 				signiture: "cd ..", 
 				description: "go back a directory"}
 		]
-	}*/
+	};
 }
+WebConsole.addLibrary(new NavigationLibrary());
+

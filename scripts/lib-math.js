@@ -11,21 +11,33 @@
 // classname: MathLibrary
 
 function MathLibrary() {
-	
-	// mandatory help function
-	this.getHelp = function() {
-		var text = 
-		"| ---------------------- Math ---------------------- |\n" +
-		"| sin(), cos(), tan()       - trigonometry           |\n" +
-		"| PI                        - constants              |\n" +
-		"| hex()                     - conversions            |\n" +
-		"| pow(a,b)                  - raise a to the b power |";
-		return text;
+	this.definition = {
+		name: "Basic",
+		commands: [
+			{
+				pattern: null,
+				action: null,
+				signiture: "sin(), cos(), tan()",
+				description: "trigonometry"},
+			{
+				pattern: null, 
+				action: null, 
+				signiture: "PI",
+				description: "constants"},
+			{
+				pattern: null, 
+				action: null, 
+				signiture: "hex()",
+				description: "conversions"},
+			{
+				pattern: null, 
+				action: null, 
+				signiture: "pow(a,b)",
+				description: "raise a to the power of b"}
+		]
 	};
-	
-	// define the command map at the end
-	this.commandmap = {};
 }
+WebConsole.addLibrary(new MathLibrary());
 
 var PI = Math.PI;
 function pow(a, b) {return Math.pow(a, b);}
