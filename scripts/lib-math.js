@@ -12,7 +12,7 @@
 
 function MathLibrary() {
 	this.definition = {
-		name: "Basic",
+		name: "Math",
 		commands: [
 			{
 				pattern: null,

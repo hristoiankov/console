@@ -37,7 +37,7 @@ function DisplayLibrary() {
 	}
 	
 	this.definition = {
-		name: "Basic",
+		name: "Display",
 		commands: [
 			{
 				pattern: "^darken display$",
